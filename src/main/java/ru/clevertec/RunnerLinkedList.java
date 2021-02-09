@@ -1,6 +1,6 @@
 package ru.clevertec;
 
-public class Runner {
+public class RunnerLinkedList {
     public static void main(String[] args) {
         NewLinkedList<String> list = new NewLinkedList<>();
 
