@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ThreadSafeCustomLinkedListTest {
-    ThreadSafeCustomLinkedList<String> list;
+public class CustomLinkedListTest {
+    CustomLinkedList<String> list;
 
     @BeforeEach
     public void createNewLinkedList() {
-        list = new ThreadSafeCustomLinkedList<>(customLinkedList, lock);
+        list = new CustomLinkedList<>();
     }
 
     @AfterEach
