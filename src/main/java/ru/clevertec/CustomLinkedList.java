@@ -4,221 +4,159 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class NewLinkedList<E> extends Thread implements List<E>{
+public class CustomLinkedList<E> implements List<E> {
     private int size;
     private Node<E> firstNode;
     private Node<E> lastNode;
-    private final ReadWriteLock lock;
 
-    private static String UNSUPPORTED_OPERATION = "Unsupported operation.";
+    private static final String UNSUPPORTED_OPERATION = "Unsupported operation.";
 
     {
         initialize();
-        lock = new ReentrantReadWriteLock();
-    }
-
-    public NewLinkedList() {
-    }
-
-    private void initialize() {
-        firstNode = null;
-        lastNode = null;
-        size = 0;
     }
 
     @Override
     public boolean add(E thisElement) {
+        Node<E> previousNode = lastNode;
+        Node<E> nextNode = null;
 
-        try {
-            lock.writeLock().lock();
+        Node<E> newNode = new Node<E>(thisElement, previousNode, nextNode);
 
-            Node<E> previousNode = lastNode;
-            Node<E> nextNode = null;
-
-            Node<E> newNode = new Node<E>(thisElement, previousNode, nextNode);
-
-            if (size == 0) {
-                firstNode = newNode;
-            } else {
-                previousNode.setNextNode(newNode);
-            }
-            lastNode = newNode;
-
-            size++;
-            return true;
-        } finally {
-            lock.writeLock().unlock();
+        if (size == 0) {
+            firstNode = newNode;
+        } else {
+            previousNode.setNextNode(newNode);
         }
+        lastNode = newNode;
+
+        size++;
+        return true;
     }
 
     @Override
     public void add(int index, E thisElement) {
-        try {
-            lock.writeLock().lock();
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        }
 
-            if (index < 0 || index > size) {
-                throw new IndexOutOfBoundsException();
-            }
+        if (size == 0 || index == size) {
+            add(thisElement);
+        } else {
 
-            if (size == 0 || index == size) {
-                add(thisElement);
+            Node<E> previousNode;
+            Node<E> nextNode;
+            Node<E> newNode;
+
+            if (index == 0) {
+                previousNode = null;
+                nextNode = firstNode;
+                newNode = new Node<>(thisElement, previousNode, nextNode);
+                nextNode.setPreviousNode(newNode);
+                firstNode = newNode;
             } else {
-
-                Node<E> previousNode;
-                Node<E> nextNode;
-                Node<E> newNode;
-
-                if (index == 0) {
-                    previousNode = null;
-                    nextNode = firstNode;
-                    newNode = new Node<>(thisElement, previousNode, nextNode);
-                    nextNode.setPreviousNode(newNode);
-                    firstNode = newNode;
-                } else {
-                    Node<E> nodeByIndex = findNodeByIndex(index);
-                    previousNode = nodeByIndex.getPreviousNode();
-                    nextNode = nodeByIndex;
-                    newNode = new Node<>(thisElement, previousNode, nextNode);
-                    previousNode.setNextNode(newNode);
-                    nextNode.setPreviousNode(newNode);
-                }
-                size++;
+                Node<E> nodeByIndex = findNodeByIndex(index);
+                previousNode = nodeByIndex.getPreviousNode();
+                nextNode = nodeByIndex;
+                newNode = new Node<>(thisElement, previousNode, nextNode);
+                previousNode.setNextNode(newNode);
+                nextNode.setPreviousNode(newNode);
             }
-        } finally {
-            lock.writeLock().unlock();
+            size++;
         }
     }
 
     @Override
     public E get(int index) {
-        try {
-            lock.readLock().lock();
-
-            if (size == 0 || index < 0 || index >= size) {
-                throw new IndexOutOfBoundsException();
-            }
-
-            return findNodeByIndex(index).getElement();
-        } finally {
-            lock.readLock().unlock();
+        if (size == 0 || index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
         }
+
+        return findNodeByIndex(index).getElement();
     }
 
     @Override
     public E remove(int index) {
-        try {
-            lock.writeLock().lock();
-
-            if (size == 0 || index < 0 || index >= size) {
-                throw new IndexOutOfBoundsException();
-            }
-
-            Node<E> node = null;
-
-            if (size == 1) {
-                node = firstNode;
-                firstNode = null;
-                lastNode = null;
-
-            } else if (index == 0) {
-                node = firstNode;
-                firstNode = firstNode.getNextNode();
-                firstNode.setPreviousNode(null);
-
-            } else if (index == size - 1) {
-                node = lastNode;
-                lastNode = lastNode.getPreviousNode();
-                lastNode.setNextNode(null);
-
-            } else {
-                node = findNodeByIndex(index);
-                Node<E> previousNode = node.getPreviousNode();
-                Node<E> nextNode = node.getNextNode();
-
-                previousNode.setNextNode(nextNode);
-                nextNode.setPreviousNode(previousNode);
-            }
-
-            size--;
-            return node.getElement();
-        } finally {
-            lock.writeLock().unlock();
+        if (size == 0 || index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
         }
+
+        Node<E> node = null;
+
+        if (size == 1) {
+            node = firstNode;
+            firstNode = null;
+            lastNode = null;
+
+        } else if (index == 0) {
+            node = firstNode;
+            firstNode = firstNode.getNextNode();
+            firstNode.setPreviousNode(null);
+
+        } else if (index == size - 1) {
+            node = lastNode;
+            lastNode = lastNode.getPreviousNode();
+            lastNode.setNextNode(null);
+
+        } else {
+            node = findNodeByIndex(index);
+            Node<E> previousNode = node.getPreviousNode();
+            Node<E> nextNode = node.getNextNode();
+
+            previousNode.setNextNode(nextNode);
+            nextNode.setPreviousNode(previousNode);
+        }
+
+        size--;
+        return node.getElement();
     }
 
     @Override
     public E set(int index, E element) {
-        try {
-            lock.writeLock().lock();
-
-            if (size == 0 || index < 0 || index >= size) {
-                throw new IndexOutOfBoundsException();
-            }
-
-            Node<E> node;
-
-            if (size == 1) {
-                node = firstNode;
-            } else {
-                node = findNodeByIndex(index);
-            }
-
-            E elementForDelete = node.getElement();
-            node.setElement(element);
-
-            return elementForDelete;
-        } finally {
-            lock.writeLock().unlock();
+        if (size == 0 || index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
         }
+
+        Node<E> node;
+
+        if (size == 1) {
+            node = firstNode;
+        } else {
+            node = findNodeByIndex(index);
+        }
+
+        E elementForDelete = node.getElement();
+        node.setElement(element);
+
+        return elementForDelete;
     }
 
     @Override
     public int size() {
-        try {
-            lock.readLock().lock();
-
-            return this.size;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return this.size;
     }
 
     @Override
     public void clear() {
-        try {
-            lock.writeLock().lock();
-
-            initialize();
-        } finally {
-            lock.writeLock().unlock();
-        }
+        initialize();
     }
 
     @Override
     public String toString() {
-        try {
-            lock.readLock().lock();
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
+        Node<E> node = firstNode;
 
-            Node<E> node = firstNode;
-
-            for (int i = 0; i < size - 1; i++) {
-                sb.append(node.getElement().toString());
-                sb.append(", ");
-                node = node.getNextNode();
-            }
+        for (int i = 0; i < size - 1; i++) {
             sb.append(node.getElement().toString());
-
-            sb.append("]");
-            return sb.toString();
-        } finally {
-            lock.readLock().unlock();
+            sb.append(", ");
+            node = node.getNextNode();
         }
+        sb.append(node.getElement().toString());
+
+        sb.append("]");
+        return sb.toString();
     }
 
     private Node<E> findNodeByIndex(int index) {
@@ -238,6 +176,11 @@ public class NewLinkedList<E> extends Thread implements List<E>{
         return nodeByIndex;
     }
 
+    private void initialize() {
+        firstNode = null;
+        lastNode = null;
+        size = 0;
+    }
     @Override
     public boolean isEmpty() {
         throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
