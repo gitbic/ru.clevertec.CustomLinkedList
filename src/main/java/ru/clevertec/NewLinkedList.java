@@ -4,16 +4,29 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class NewLinkedList<E> implements List<E> {
+public class NewLinkedList<E> extends Thread implements List<E>{
     private int size;
     private Node<E> firstNode;
     private Node<E> lastNode;
-    private ReentrantReadWriteLock lock;
+    private final ReadWriteLock lock;
+
+    private static String UNSUPPORTED_OPERATION = "Unsupported operation.";
 
     {
         initialize();
+        lock = new ReentrantReadWriteLock();
+    }
+
+    public NewLinkedList() {
+    }
+
+    private void initialize() {
+        firstNode = null;
+        lastNode = null;
+        size = 0;
     }
 
     @Override
@@ -177,6 +190,7 @@ public class NewLinkedList<E> implements List<E> {
     public void clear() {
         try {
             lock.writeLock().lock();
+
             initialize();
         } finally {
             lock.writeLock().unlock();
@@ -224,23 +238,14 @@ public class NewLinkedList<E> implements List<E> {
         return nodeByIndex;
     }
 
-    private void initialize() {
-        firstNode = null;
-        lastNode = null;
-        size = 0;
-        lock = new ReentrantReadWriteLock();
-    }
-
-    //----------
-
     @Override
     public boolean isEmpty() {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
@@ -250,52 +255,52 @@ public class NewLinkedList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        return null;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
@@ -322,49 +327,48 @@ public class NewLinkedList<E> implements List<E> {
 
             @Override
             public boolean hasPrevious() {
-                return false;
+                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
             }
 
             @Override
             public E previous() {
-                return null;
+                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
             }
 
             @Override
             public int nextIndex() {
-                return 0;
+                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
             }
 
             @Override
             public int previousIndex() {
-                return 0;
+                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
             }
 
             @Override
             public void remove() {
-
+                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
             }
 
             @Override
             public void set(E e) {
-
+                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
             }
 
             @Override
             public void add(E e) {
-
+                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
             }
         };
     }
 
     @Override
     public ListIterator<E> listIterator(int index) {
-        return null;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        return null;
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
     }
-
 }
