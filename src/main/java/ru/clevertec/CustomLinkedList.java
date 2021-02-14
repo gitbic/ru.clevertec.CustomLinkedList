@@ -10,7 +10,7 @@ public class CustomLinkedList<E> implements List<E> {
     private Node<E> firstNode;
     private Node<E> lastNode;
 
-    private static final String UNSUPPORTED_OPERATION = "Unsupported operation.";
+    public static final String UNSUPPORTED_OPERATION = "Unsupported operation.";
 
     {
         initialize();

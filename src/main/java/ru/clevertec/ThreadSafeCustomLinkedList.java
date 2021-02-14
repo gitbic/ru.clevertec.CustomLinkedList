@@ -5,13 +5,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static ru.clevertec.CustomLinkedList.UNSUPPORTED_OPERATION;
 
 public class ThreadSafeCustomLinkedList<E> implements List<E> {
 
     private final List<E> customLinkedList;
     private final ReadWriteLock lock;
 
-    private static final String UNSUPPORTED_OPERATION = "Unsupported operation.";
+    public ThreadSafeCustomLinkedList() {
+        customLinkedList = new CustomLinkedList<>();
+        lock = new ReentrantReadWriteLock();
+    }
 
     public ThreadSafeCustomLinkedList(List<E> customLinkedList, ReadWriteLock lock) {
         this.customLinkedList = customLinkedList;

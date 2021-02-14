@@ -1,17 +1,24 @@
 package ru.clevertec;
 
-public class NewLinkedListThread <T> extends Thread{
-    ThreadSafeCustomLinkedList<T> threadSafeCustomLinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
-    public NewLinkedListThread(String name, ThreadSafeCustomLinkedList<T> threadSafeCustomLinkedList) {
+public class NewLinkedListThread <T> extends Thread{
+    List<T> threadSafeCustomLinkedList;
+
+    public NewLinkedListThread(String name, List<T> threadSafeCustomLinkedList) {
         super(name);
         this.threadSafeCustomLinkedList = threadSafeCustomLinkedList;
     }
 
-    public boolean add(T t) {
-        System.out.println(this.getName() + " write " + t);
-        return threadSafeCustomLinkedList.add(t);
+    public List<T> getThreadSafeCustomLinkedList() {
+        return threadSafeCustomLinkedList;
     }
 
 
+
+    @Override
+    public void run() {
+        super.run();
+    }
 }
