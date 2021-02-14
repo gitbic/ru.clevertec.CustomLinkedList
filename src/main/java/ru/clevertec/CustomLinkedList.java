@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CustomLinkedList<E> implements List<E> {
     private int size;
@@ -248,24 +250,39 @@ public class CustomLinkedList<E> implements List<E> {
 
     @Override
     public ListIterator<E> listIterator() {
+        ReadWriteLock lock = new ReentrantReadWriteLock();
 
         return new ListIterator<E>() {
             Node<E> currentNode = firstNode;
 
             @Override
             public boolean hasNext() {
-                if (size > 0 && currentNode != null) {
-                    return true;
-                } else {
-                    return false;
+                lock.writeLock().lock();
+                try {
+
+                    return size > 0 && currentNode != null;
+                } finally {
+                    lock.writeLock().unlock();
                 }
             }
 
             @Override
             public E next() {
-                Node<E> node = currentNode;
-                currentNode = currentNode.getNextNode();
-                return node.getElement();
+                if (currentNode == null) {
+                    System.out.println("---------------");
+                    return null;
+                }
+                try {
+                    lock.writeLock().lock();
+                    Node<E> node = currentNode;
+                    currentNode = currentNode.getNextNode();
+                    return node.getElement();
+                }catch (NullPointerException e) {
+                    System.out.println(currentNode);
+                    return null;
+                } finally {
+                    lock.writeLock().unlock();
+                }
             }
 
             @Override

@@ -24,6 +24,11 @@ public class ThreadSafeCustomLinkedList<E> implements List<E> {
         this.lock = lock;
     }
 
+    public ThreadSafeCustomLinkedList(ReadWriteLock lock) {
+        this.lock = lock;
+        customLinkedList = new CustomLinkedList<>();
+    }
+
     @Override
     public boolean add(E thisElement) {
         try {
@@ -116,7 +121,7 @@ public class ThreadSafeCustomLinkedList<E> implements List<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return customLinkedList.listIterator();
+        return listIterator();
     }
 
     @Override
@@ -172,11 +177,73 @@ public class ThreadSafeCustomLinkedList<E> implements List<E> {
     @Override
     public ListIterator<E> listIterator() {
         try {
-            lock.readLock().lock();
+            lock.writeLock().lock();
             return customLinkedList.listIterator();
         } finally {
-            lock.readLock().unlock();
+            lock.writeLock().unlock();
         }
+//        return customLinkedList.listIterator();
+
+
+
+//
+//        return new ListIterator<E>() {
+//
+//            @Override
+//            public boolean hasNext() {
+//                try {
+//                    lock.readLock().lock();
+//                    return customLinkedList.listIterator().hasNext();
+//                } finally {
+//                    lock.readLock().unlock();
+//                }
+//            }
+//
+//            @Override
+//            public E next() {
+//                try {
+//                    lock.readLock().lock();
+//                    return customLinkedList.listIterator().next();
+//                } finally {
+//                    lock.readLock().unlock();
+//                }
+//            }
+//
+//            @Override
+//            public boolean hasPrevious() {
+//                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+//            }
+//
+//            @Override
+//            public E previous() {
+//                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+//            }
+//
+//            @Override
+//            public int nextIndex() {
+//                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+//            }
+//
+//            @Override
+//            public int previousIndex() {
+//                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+//            }
+//
+//            @Override
+//            public void remove() {
+//                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+//            }
+//
+//            @Override
+//            public void set(E e) {
+//                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+//            }
+//
+//            @Override
+//            public void add(E e) {
+//                throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+//            }
+//        };
     }
 
     @Override
