@@ -1,6 +1,6 @@
 package ru.clevertec;
 
-public  class Node<E> {
+public class Node<E> {
     private E element;
     private Node<E> previousNode;
     private Node<E> nextNode;

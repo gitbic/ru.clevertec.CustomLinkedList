@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -257,10 +258,9 @@ public class CustomLinkedList<E> implements List<E> {
 
             @Override
             public boolean hasNext() {
-                lock.writeLock().lock();
                 try {
-
-                    return size > 0 && currentNode != null;
+                    lock.writeLock().lock();
+                    return currentNode != null;
                 } finally {
                     lock.writeLock().unlock();
                 }
@@ -268,17 +268,12 @@ public class CustomLinkedList<E> implements List<E> {
 
             @Override
             public E next() {
-                if (currentNode == null) {
-                    System.out.println("---------------");
-                    return null;
-                }
                 try {
                     lock.writeLock().lock();
                     Node<E> node = currentNode;
                     currentNode = currentNode.getNextNode();
                     return node.getElement();
                 }catch (NullPointerException e) {
-                    System.out.println(currentNode);
                     return null;
                 } finally {
                     lock.writeLock().unlock();
