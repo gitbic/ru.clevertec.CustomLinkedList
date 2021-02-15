@@ -11,12 +11,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ThreadTest<T> extends Thread {
     AtomicInteger count = new AtomicInteger(0);
     Iterator<T> iterator;
-    Set<T> set;
 
-    public ThreadTest(String name, Iterator<T> iterator, Set<T> set) {
+    public ThreadTest(String name, Iterator<T> iterator) {
         super(name);
         this.iterator = iterator;
-        this.set = set;
     }
 
     @Override
@@ -26,7 +24,6 @@ public class ThreadTest<T> extends Thread {
             element = iterator.next();
 //            System.out.println(getName() + " " + element);
             count.getAndAdd(1);
-            set.add(element);
         }
         System.out.println(this.getName() + " "+ count);
     }

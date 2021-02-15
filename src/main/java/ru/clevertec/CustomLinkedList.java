@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -255,13 +256,15 @@ public class CustomLinkedList<E> implements List<E> {
 
         return new ListIterator<E>() {
             Node<E> currentNode = firstNode;
+            AtomicInteger count = new AtomicInteger(0);
 
             @Override
-            public boolean hasNext() {
+            public synchronized boolean hasNext() {
                 try {
                     lock.writeLock().lock();
-                    return currentNode != null;
+                    return count.get() < size;
                 } finally {
+                    count.getAndAdd(1);
                     lock.writeLock().unlock();
                 }
             }

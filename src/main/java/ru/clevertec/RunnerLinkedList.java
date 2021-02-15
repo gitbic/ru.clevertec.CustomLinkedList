@@ -20,9 +20,6 @@ public class RunnerLinkedList {
 
         ReadWriteLock lock = new ReentrantReadWriteLock();
         List<String> list = new ThreadSafeCustomLinkedList<>(lock);
-        Set<String> set = new HashSet<>();
-        Set<String> synset = Collections.synchronizedSet(set);
-
 
 
         for (int i = 0; i < 100000; i++) {
@@ -31,11 +28,11 @@ public class RunnerLinkedList {
 
         Iterator<String> iterator = list.iterator();
 
-        ThreadTest<String> thread1 = new ThreadTest<>("Thread 1", iterator, synset);
-        ThreadTest<String> thread2 = new ThreadTest<>("Thread 2", iterator, synset);
-        ThreadTest<String> thread3 = new ThreadTest<>("Thread 3", iterator, synset);
-        ThreadTest<String> thread4 = new ThreadTest<>("Thread 4", iterator, synset);
-        ThreadTest<String> thread5 = new ThreadTest<>("Thread 5", iterator, synset);
+        ThreadTest<String> thread1 = new ThreadTest<>("Thread 1", iterator);
+        ThreadTest<String> thread2 = new ThreadTest<>("Thread 2", iterator);
+        ThreadTest<String> thread3 = new ThreadTest<>("Thread 3", iterator);
+        ThreadTest<String> thread4 = new ThreadTest<>("Thread 4", iterator);
+        ThreadTest<String> thread5 = new ThreadTest<>("Thread 5", iterator);
 
 
         try {
@@ -57,8 +54,5 @@ public class RunnerLinkedList {
                 + thread4.count.get()
                 + thread5.count.get()));
 
-        System.out.println("Set size: " + set.size());
-
-        System.out.println(set.contains(null));
     }
 }
