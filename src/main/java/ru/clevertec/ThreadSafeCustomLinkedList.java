@@ -25,11 +25,6 @@ public class ThreadSafeCustomLinkedList<E> implements List<E> {
         this.lock = lock;
     }
 
-    public ThreadSafeCustomLinkedList(ReadWriteLock lock) {
-        this.lock = lock;
-        customLinkedList = new CustomLinkedList<>();
-    }
-
     @Override
     public boolean add(E thisElement) {
         try {

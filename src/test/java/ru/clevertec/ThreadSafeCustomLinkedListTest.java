@@ -1,26 +1,32 @@
 package ru.clevertec;
 
-import java.util.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RunnerLinkedList {
-    public static void main(String[] args) {
-//        List<String> list = new CustomLinkedList<>();
-//
-//        for (int i = 0; i < 10; i++) {
-//            list.add("element " + i);
-//        }
-//
-//        System.out.println(list.toString());
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+public class ThreadSafeCustomLinkedListTest {
+    List<String> list;
+    private static final int LIST_SIZE = 100000;
 
-        List<String> list = new ThreadSafeCustomLinkedList<>();
+    @BeforeEach
+    public void createNewList() {
+        list = new ThreadSafeCustomLinkedList<>();
+    }
 
-        for (int i = 0; i < 100000; i++) {
-            list.add("Number: " + i);
-        }
+    @AfterEach
+    public void clearList() {
+        list = null;
+    }
+
+    @Test
+    public void testListIteratorGetElements() {
+        fillList();
 
         Iterator<String> iterator = list.iterator();
 
@@ -29,7 +35,6 @@ public class RunnerLinkedList {
         IteratorThread<String> thread3 = new IteratorThread<>("Thread 3", iterator);
         IteratorThread<String> thread4 = new IteratorThread<>("Thread 4", iterator);
         IteratorThread<String> thread5 = new IteratorThread<>("Thread 5", iterator);
-
 
         try {
             thread1.start();
@@ -42,13 +47,19 @@ public class RunnerLinkedList {
             e.printStackTrace();
         }
 
-
-        System.out.println("Element count: "
-                + (thread1.count.get()
+        int count = thread1.count.get()
                 + thread2.count.get()
                 + thread3.count.get()
                 + thread4.count.get()
-                + thread5.count.get()));
+                + thread5.count.get();
 
+        assertEquals(count, LIST_SIZE);
+
+    }
+
+    private void fillList() {
+        for (int i = 0; i < LIST_SIZE; i++) {
+            list.add("Number: " + i);
+        }
     }
 }

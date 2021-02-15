@@ -4,10 +4,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomLinkedListTest {
-    CustomLinkedList<String> list;
+    List<String> list;
 
     @BeforeEach
     public void createNewLinkedList() {
