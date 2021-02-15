@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -176,12 +177,74 @@ public class ThreadSafeCustomLinkedList<E> implements List<E> {
 
     @Override
     public ListIterator<E> listIterator() {
+
         try {
             lock.writeLock().lock();
-            return customLinkedList.listIterator();
+            return new ListIterator<E>() {
+                final int size = customLinkedList.size();
+                final AtomicInteger index = new AtomicInteger(0);
+                final Iterator<E> iterator = customLinkedList.listIterator();
+
+                @Override
+                public boolean hasNext() {
+                    try {
+                        lock.writeLock().lock();
+                        return index.get() < size;
+                    } finally {
+                        index.getAndAdd(1);
+                        lock.writeLock().unlock();
+                    }
+                }
+
+                @Override
+                public E next() {
+                    try {
+                        lock.writeLock().lock();
+                        return iterator.next();
+                    } finally {
+                        lock.writeLock().unlock();
+                    }
+                }
+
+                @Override
+                public boolean hasPrevious() {
+                    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+                }
+
+                @Override
+                public E previous() {
+                    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+                }
+
+                @Override
+                public int nextIndex() {
+                    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+                }
+
+                @Override
+                public int previousIndex() {
+                    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+                }
+
+                @Override
+                public void set(E e) {
+                    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+                }
+
+                @Override
+                public void add(E e) {
+                    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+                }
+            };
         } finally {
             lock.writeLock().unlock();
         }
+
     }
 
     @Override

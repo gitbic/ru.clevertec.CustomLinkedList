@@ -256,31 +256,21 @@ public class CustomLinkedList<E> implements List<E> {
 
         return new ListIterator<E>() {
             Node<E> currentNode = firstNode;
-            AtomicInteger count = new AtomicInteger(0);
 
             @Override
-            public synchronized boolean hasNext() {
-                try {
-                    lock.writeLock().lock();
-                    return count.get() < size;
-                } finally {
-                    count.getAndAdd(1);
-                    lock.writeLock().unlock();
+            public boolean hasNext() {
+                if (currentNode != null) {
+                    return true;
+                } else {
+                    return false;
                 }
             }
 
             @Override
             public E next() {
-                try {
-                    lock.writeLock().lock();
-                    Node<E> node = currentNode;
-                    currentNode = currentNode.getNextNode();
-                    return node.getElement();
-                }catch (NullPointerException e) {
-                    return null;
-                } finally {
-                    lock.writeLock().unlock();
-                }
+                Node<E> node = currentNode;
+                currentNode = currentNode.getNextNode();
+                return node.getElement();
             }
 
             @Override
