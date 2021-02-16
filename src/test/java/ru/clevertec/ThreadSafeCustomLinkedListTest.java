@@ -54,7 +54,6 @@ public class ThreadSafeCustomLinkedListTest {
                 + thread5.count.get();
 
         assertEquals(count, LIST_SIZE);
-
     }
 
     private void fillList() {
